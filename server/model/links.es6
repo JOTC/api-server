@@ -1,11 +1,11 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var linkSchema = mongoose.Schema({
+const linkSchema = mongoose.Schema({
 	name: String,
 	url: String
 });
 
-var groupSchema = mongoose.Schema({
+const groupSchema = mongoose.Schema({
 	name: String,
 	ordering: Number,
 	links: [ linkSchema ]
