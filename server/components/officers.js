@@ -1,6 +1,6 @@
 var db = require("../model/db.js");
 var log = require("bunyan").createLogger({ name: "officers component", level: "debug" });
-var fn = require("../common-fn.js");
+var fn = require("../common-fn");
 
 var isValidOfficer = function(officer) {
 	var valid = false;

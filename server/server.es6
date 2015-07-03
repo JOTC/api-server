@@ -29,7 +29,7 @@ app.use(function(req, res, next) {
 });
 app.delete = app.del;
 
-require("./auth.js")(passport);
+require("./auth")(passport);
 
 app.post("/auth/local", restify.bodyParser({ mapParams: false }), passport.authenticate("custom-local"), function(req, res) { res.send(200); });
 

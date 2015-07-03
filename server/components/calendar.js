@@ -1,5 +1,5 @@
 var db = require("../model/db.js");
-var fn = require("../common-fn.js");
+var fn = require("../common-fn");
 var log = require("bunyan").createLogger({ name: "calendar component", level: "debug" });
 var restify = require("restify");
 

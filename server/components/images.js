@@ -4,7 +4,7 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var log = require("bunyan").createLogger({ name: "image component", level: "debug" });
-var fn = require("../common-fn.js");
+var fn = require("../common-fn");
 var config = require("../config");
 
 var ImageProcessor = require("./images.processor.js")();
