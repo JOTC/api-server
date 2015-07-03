@@ -1,6 +1,6 @@
 var restify = require("restify");
 var fs = require("fs-extra");
-var db = require("../model/db.js");
+var db = require("../model/db");
 var fn = require("../common-fn");
 var log = require("bunyan").createLogger({ name: "classes component", level: "debug" });
 var config = require("../config");

@@ -1,5 +1,5 @@
 var restify = require("restify");
-var db = require("../model/db.js");
+var db = require("../model/db");
 var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");

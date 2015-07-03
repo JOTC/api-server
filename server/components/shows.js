@@ -1,7 +1,7 @@
 var restify = require("restify");
 var fs = require("fs-extra");
-var db = require("../model/db.js");
-var dates = require("../dateHelper.es6");
+var db = require("../model/db");
+var dates = require("../dateHelper");
 var fn = require("../common-fn");
 var log = require("bunyan").createLogger({ name: "shows component", level: "debug" });
 var config = require("../config");

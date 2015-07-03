@@ -1,4 +1,4 @@
-var db = require("../model/db.js");
+var db = require("../model/db");
 var log = require("bunyan").createLogger({ name: "officers component", level: "debug" });
 var fn = require("../common-fn");
 

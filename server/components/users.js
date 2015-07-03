@@ -1,5 +1,5 @@
 var restify = require("restify");
-var db = require("../model/db.js");
+var db = require("../model/db");
 var fn = require("../common-fn");
 var log = require("bunyan").createLogger({ name: "users component", level: "debug" });
 var nodemailer = require('nodemailer');

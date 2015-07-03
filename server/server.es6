@@ -78,7 +78,7 @@ for(let file of fs.readdirSync("./components")) {
 
 app.listen(config.port, function() {
 	log.info(`${app.name} ready at ${app.url}`);
-	require("./model/db.js");
+	require("./model/db");
 });
 
 process.on("SIGINT", function() {

@@ -1,3 +1,6 @@
+require("babel/register")({
+    extensions: [ ".es6" ]
+});
 var dbUsers = require("../model/db").users;
 var should = require("should");
 var request = require("request");
