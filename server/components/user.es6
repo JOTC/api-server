@@ -1,13 +1,13 @@
-var restify = require("restify");
-var db = require("../model/db");
-var fn = require("../common-fn");
-var log = require("bunyan").createLogger({ name: "users component", level: "debug" });
-var nodemailer = require('nodemailer');
-var config = require("../config");
-var bcrypt = require("bcryptjs");
+const restify = require("restify");
+const db = require("../model/db");
+const fn = require("../common-fn");
+const log = require("bunyan").createLogger({ name: "users component", level: "debug" });
+const nodemailer = require('nodemailer');
+const config = require("../config");
+const bcrypt = require("bcryptjs");
 
-var isValidUser = function(user) {
-	var valid = false;
+function isValidUser(user) {
+	let valid = false;
 	if(user) {
 		valid = true;
 		valid = valid && (user.name && typeof user.name === "string");
@@ -35,9 +35,9 @@ module.exports = {
 					objs.splice(0, objs.length);
 				}
 
-				objs.forEach(function(user) {
+				for(let user of objs) {
 					user.local = null;
-				});
+				};
 			}),
 			"post": fn.getModelCreator(db.users, "users", log, isValidUser, function(obj, done) {
 
@@ -45,18 +45,18 @@ module.exports = {
 				// the response.  We're good from here on out.
 				done();
 
-				var token = require("crypto").randomBytes(16).toString("hex");
+				const token = require("crypto").randomBytes(16).toString("hex");
 
 				// Wait a tick before changing this object, so
 				// the user's local data won't be sent back in
 				// the response.
-				setTimeout(function() {
+				setTimeout(() => {
 					obj.local.username = obj.email;
 					obj.local.secret = "---init---" + bcrypt.hashSync(token);
 					obj.save();
 				}, 0);
 
-				var transporter = nodemailer.createTransport({
+				let transporter = nodemailer.createTransport({
 				    service: "Gmail",
 				    auth: {
 				        user: config.gmail.username,
@@ -64,21 +64,21 @@ module.exports = {
 				    }
 				});
 
-				var emailOptions = {
-					from: "JOTC Website <" + config.gmail.username + ">",
-					to: obj.name + " <" + obj.email + ">",
+				let emailOptions = {
+					from: `JOTC Website <${config.gmail.username}>`,
+					to: `${obj.name} <${obj.email}>`,
 					subject: "JOTC Website Account",
-					text:	"Dear " + obj.name + ",\n\nAn account has been created for you on the " +
-							"Jackson Obedience Training Club website. Before you can log in, you must enable " +
-							"your account and set a password. To do that, please click the following link:\n\n" +
-							"http://jotc.org/data2/auth/local/validate/" + obj._id + "/" + token + "\n\n" +
-							"After you have set your password, you will immediately be logged in and " +
-							"redirected to to the JOTC website. After that, you may log in again whenever " +
-							"you need to by simply visiting the JOTC website and clicking the [Login] link " +
-							"in the top-right corner of the front page."
+					text:	`Dear ${obj.name},\n\nAn account has been created for you on the ` +
+							`Jackson Obedience Training Club website. Before you can log in, you must enable ` +
+							`your account and set a password. To do that, please click the following link:\n\n` +
+							`http://jotc.org/data2/auth/local/validate/${obj._id}/${token}\n\n` +
+							`After you have set your password, you will immediately be logged in and ` +
+							`redirected to to the JOTC website. After that, you may log in again whenever ` +
+							`you need to by simply visiting the JOTC website and clicking the [Login] link ` +
+							`in the top-right corner of the front page.`
 				};
 
-				var permissionText = "";
+				let permissionText = "";
 				if(obj.permissions) {
 					if(obj.permissions.shows) {
 						permissionText += "\n * Add, edit, and remove shows";
@@ -103,17 +103,17 @@ module.exports = {
 					}
 				}
 				if(permissionText.length > 0) {
-					permissionText = "\n\nYour account has been granted the following privileges:" + permissionText;
+					permissionText = `\n\nYour account has been granted the following privileges:${permissionText}`;
 				}
 
-				emailOptions.text += permissionText + "\n\nSincerely,\nJOTC Website Admin";
+				emailOptions.text += `${permissionText}\n\nSincerely,\nJOTC Website Admin`;
 
 				transporter.sendMail(emailOptions, function(error) {
 					if(error) {
-						log.error("Error sending email to %s", obj.email);
+						log.error(`Error sending email to ${obj.email}`);
 						log.error(error);
 					} else {
-						log.info("Email successfully sent to %s", obj.email);
+						log.info(`Email successfully sent to ${obj.email}`);
 					}
 				});
 			})
@@ -130,15 +130,15 @@ module.exports = {
 							log.error(err);
 							res.send(new restify.InternalServerError());
 						} else if(user) {
-							var token = require("crypto").randomBytes(16).toString("hex");
+							const token = require("crypto").randomBytes(16).toString("hex");
 							user.local.secret = "---init---" + bcrypt.hashSync(token);
-
+							
 							user.save(function(err) {
 								if(err) {
 									log.error(err);
 									res.send(new restify.InternalServerError());
 								} else {
-									var transporter = nodemailer.createTransport({
+									let transporter = nodemailer.createTransport({
 									    service: "Gmail",
 									    auth: {
 									        user: config.gmail.username,
@@ -146,25 +146,25 @@ module.exports = {
 									    }
 									});
 
-									var emailOptions = {
-										from: "JOTC Website <" + config.gmail.username + ">",
-										to: user.name + " <" + user.email + ">",
+									let emailOptions = {
+										from: `JOTC Website <${config.gmail.username}>`,
+										to: `${user.name} <${user.email}>`,
 										subject: "JOTC Website Password Reset",
-										text:	"Dear " + user.name + ",\n\nYour password on Jackson Obedience Training Club " +
-												"website is ready to be reset.  To do that, please click the following link:\n\n" +
-												"http://jotc.org/data2/auth/local/validate/" + user._id + "/" + token + "\n\n" +
-												"After you have set your password, you will immediately be logged in and " +
-												"redirected to to the JOTC website. After that, you may log in again whenever " +
-												"you need to by simply visiting the JOTC website and clicking the [Login] link " +
-												"in the top-right corner of the front page.\n\nSincerely,\nJOTC Website Admin"
+										text:	`Dear ${user.name},\n\nYour password on Jackson Obedience Training Club ` +
+												`website is ready to be reset.  To do that, please click the following link:\n\n` +
+												`http://jotc.org/data2/auth/local/validate/${user._id}/${token}\n\n` +
+												`After you have set your password, you will immediately be logged in and ` +
+												`redirected to to the JOTC website. After that, you may log in again whenever ` +
+												`you need to by simply visiting the JOTC website and clicking the [Login] link ` +
+												`in the top-right corner of the front page.\n\nSincerely,\nJOTC Website Admin`
 									};
 
 									transporter.sendMail(emailOptions, function(error) {
 										if(error) {
-											log.error("Error sending email to %s", user.email);
+											log.error(`Error sending email to ${user.email}`);
 											log.error(error);
 										} else {
-											log.info("Email successfully sent to %s", user.email);
+											log.info(`Email successfully sent to ${user.email}`);
 										}
 									});
 
@@ -196,7 +196,7 @@ module.exports = {
 						log.error("User [%s] not found", req.params.userID);
 						res.send(new restify.NotFoundError());
 					} else if(user.local && user.local.secret && typeof user.local.secret === "string" && user.local.secret.substr(0, 10) === "---init---") {
-						var secret = user.local.secret.substr(10);
+						let secret = user.local.secret.substr(10);
 						if(bcrypt.compareSync(req.params.validationCode, secret)) {
 							req.session.resetPassword = { userID: req.params.userID, validationCode: req.params.validationCode };
 							res.redirect("/#/resetPassword");
@@ -223,10 +223,10 @@ module.exports = {
 							log.error("User [%s] not found", req.params.userID);
 							res.send(new restify.NotFoundError());
 						} else if(user.local && user.local.secret && typeof user.local.secret === "string" && user.local.secret.substr(0, 10) === "---init---") {
-							var newSecret = req.body;
+							let newSecret = req.body;
 							if(newSecret && newSecret.secret && typeof newSecret.secret === "string") {
 								newSecret = newSecret.secret;
-								var secret = user.local.secret.substr(10);
+								let secret = user.local.secret.substr(10);
 
 								if(bcrypt.compareSync(req.session.resetPassword.validationCode, secret)) {
 									delete req.session.resetPassword;
