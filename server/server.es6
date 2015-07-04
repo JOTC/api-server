@@ -1,14 +1,14 @@
-var restify = require("restify");
-var passport = require("passport");
-var sessions = require("client-sessions");
-var fs = require("fs");
-var config = require("./config");
-var log = require("bunyan").createLogger({ name: "main", level: "debug" });
+const restify = require("restify");
+const passport = require("passport");
+const sessions = require("client-sessions");
+const fs = require("fs");
+const config = require("./config");
+const log = require("bunyan").createLogger({ name: "main", level: "debug" });
 
-var app = restify.createServer({ name: "JOTC Data API Server" });
+const app = restify.createServer({ name: "JOTC Data API Server" });
 
 app.use(function(req, res, next) {
-	log.debug("Got request: [%s] %s", req.route.method, req.url);
+	log.debug(`Got request: [${req.route.method}] ${req.url}`);
 	next();
 });
 app.use(restify.queryParser());
@@ -21,8 +21,7 @@ app.use(sessions({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(function(req, res, next) {
-	res.redirect = function(address)
-	{
+	res.redirect = function(address) {
 		res.header("Location", address);
 		res.send(302);
 	};
@@ -30,12 +29,12 @@ app.use(function(req, res, next) {
 });
 app.delete = app.del;
 
-require("./auth.js")(passport);
+require("./auth")(passport);
 
 app.post("/auth/local", restify.bodyParser({ mapParams: false }), passport.authenticate("custom-local"), function(req, res) { res.send(200); });
 
 app.get("/auth/user", function(req, res, next) {
-	var user = { };
+	let user = { };
 	if(req.user) {
 		user = JSON.parse(JSON.stringify(req.user));
 	}
@@ -52,22 +51,18 @@ app.get("/auth/logout", function(req, res, next) {
 	next();
 });
 
-fs.readdirSync("./components").forEach(function(file) {
-	var component = require("./components/" + file);
-	for(var path in component.paths) {
-		if(!component.paths.hasOwnProperty(path)) {
-			continue;
-		}
+for(let file of fs.readdirSync("./components")) {
+	const component = require("./components/" + file);
+	if(!component.paths) {
+		continue;
+	}
 
-		for(var verb in component.paths[path]) {
-			if(!component.paths[path].hasOwnProperty(verb)) {
-				continue;
-			}
-
+	for(let path of Object.keys(component.paths)) {
+		for(let verb of Object.keys(component.paths[path])) {
 			var handler = component.paths[path][verb];
 			if(typeof(handler) === "function") {
 				app[verb.toLowerCase()](path, restify.bodyParser({ mapParams: false }), handler);
-				log.info("%s\t%s", verb.toUpperCase(), path);
+				log.info(`${verb.toUpperCase()}\t${path}`);
 			} else if(handler.options && handler.function) {
 				var middleware = [ ];
 				if(handler.options.useBodyParser) {
@@ -75,18 +70,17 @@ fs.readdirSync("./components").forEach(function(file) {
 				}
 
 				app[verb.toLowerCase()](path, middleware, handler.function);
-				log.info("%s\t%s", verb.toUpperCase(), path);
+				log.info(`${verb.toUpperCase()}\t${path}`);
 			}
 		}
 	}
-});
+};
 
 app.listen(config.port, function() {
-	log.info("%s ready at %s", app.name, app.url);
-	require("./model/db.js");
+	log.info(`${app.name} ready at ${app.url}`);
+	require("./model/db");
 });
 
 process.on("SIGINT", function() {
-  console.log('CLOSING [SIGINT]');
   process.exit();
 });

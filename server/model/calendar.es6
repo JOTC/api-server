@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var calendarSchema = mongoose.Schema({
+const calendarSchema = mongoose.Schema({
 	title: String,
 	startDate: Date,
 	endDate: Date,

@@ -1,22 +1,22 @@
-var restify = require("restify");
-var fs = require("fs-extra");
-var db = require("../model/db.js");
-var fn = require("../common-fn.js");
-var log = require("bunyan").createLogger({ name: "classes component", level: "debug" });
-var config = require("../config");
-var path = require("path");
+const restify = require("restify");
+const fs = require("fs-extra");
+const db = require("../model/db");
+const fn = require("../common-fn");
+const log = require("bunyan").createLogger({ name: "classes component", level: "debug" });
+const config = require("../config");
+const path = require("path");
 
-var __WWW_PATH = "/files/classes";
-var __FILE_PATH = config.www.getPath(__WWW_PATH);
+const __WWW_PATH = "/files/classes";
+const __FILE_PATH = config.www.getPath(__WWW_PATH);
 
-var getFutureClasses = function(callback) {
-	var midnightToday = Date.now();
+function getFutureClasses(callback) {
+	let midnightToday = Date.now();
 	midnightToday = new Date(midnightToday - (midnightToday % 86400000));
 	db.classes.classes.find({ endDate: { $gte: midnightToday }}).sort({ startDate: "asc" }).exec(callback);
 };
 
-var isValidClass = function(clss) {
-	var valid = false;
+function isValidClass(clss) {
+	let valid = false;
 
 	if(clss) {
 		valid = true;
@@ -30,19 +30,19 @@ var isValidClass = function(clss) {
 		if(valid) {
 			valid = valid && (clss.classTypes.length > 0);
 
-			clss.classTypes.forEach(function(classType) {
+			for(let classType of clss.classTypes) {
 				valid = valid && (classType._id && typeof classType._id === "string");
 				valid = valid && (classType.name && typeof classType.name === "string");
 				valid = valid && (classType.description && typeof classType.description === "string");
 				valid = valid && (typeof classType.isAdvanced === "boolean");
-			});
+			};
 		}
 	}
 
 	return valid;
 };
 
-var getRegistrationFormFilename = function(clss) {
+function getRegistrationFormFilename(clss) {
 	return "JOTC_Class_Registration.pdf";
 };
 
@@ -88,7 +88,7 @@ module.exports = {
 					return next(new restify.UnauthorizedError());
 				}
 
-				var handleError = function(err) {
+				const handleError = function(err) {
 					log.error(err);
 					res.send(new restify.InternalServerError());
 					require("fs").unlinkSync(req.files.file.path);
@@ -103,7 +103,7 @@ module.exports = {
 						handleError(err);
 						next();
 					} else if(clss) {
-						var filename = getRegistrationFormFilename(clss);
+						const filename = getRegistrationFormFilename(clss);
 						fs.move(req.files.file.path, path.join(__FILE_PATH, req.params.classID, filename), { mkdirp: true }, function(err) {
 							if(err) {
 								handleError(err);

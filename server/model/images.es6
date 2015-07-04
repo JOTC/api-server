@@ -1,12 +1,12 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var imageSchema = mongoose.Schema({
+const imageSchema = mongoose.Schema({
 	description: String,
 	path: String,
 	added: { type: Date, default: Date.now }
 });
 
-var imageGallerySchema = mongoose.Schema({
+const imageGallerySchema = mongoose.Schema({
 	name: String,
 	description: String,
 	created: { type: Date, default: Date.now },

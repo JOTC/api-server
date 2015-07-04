@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var fileSchema = mongoose.Schema({
+const fileSchema = mongoose.Schema({
 	filename: String,
 	mime: String,
 	size: String

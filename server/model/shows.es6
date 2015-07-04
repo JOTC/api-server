@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var showSchema = mongoose.Schema({
+const showSchema = mongoose.Schema({
 	startDate: Date,
 	endDate: Date,
 	dateRange: String,
@@ -14,7 +14,7 @@ var showSchema = mongoose.Schema({
 	resultsPath: String
 });
 
-var recurringShowSchema = mongoose.Schema({
+const recurringShowSchema = mongoose.Schema({
 	description: String,
 	ordering: Number,
 	categories: [{

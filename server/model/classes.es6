@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var classTypesSchema = mongoose.Schema({
+const classTypesSchema = mongoose.Schema({
 	name: String,
 	description: String,
 	prerequisite: String,
@@ -8,7 +8,7 @@ var classTypesSchema = mongoose.Schema({
 	priorityOrder: Number
 });
 
-var classSchema = mongoose.Schema({
+const classSchema = mongoose.Schema({
 	startDate: Date,
 	endDate: Date,
 	numberOfWeeks: {type: Number, default: 6 },

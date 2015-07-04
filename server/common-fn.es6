@@ -1,13 +1,13 @@
-var restify = require("restify");
+const restify = require("restify");
 
-var getBasicBodyHandler = function(permissionName, logger, validationFn, handler) {
+function getBasicBodyHandler(permissionName, logger, validationFn, handler) {
 	return function(req, res, next) {
 		if(!req.user || !req.user.permissions[permissionName]) {
 			logger.error("Unauthorized user");
             return next(new restify.UnauthorizedError());
         }
 
-		var obj = req.body;
+		let obj = req.body;
 		if(!validationFn || (validationFn && validationFn(obj))) {
 			if(handler) {
 				handler(req, res, obj);
@@ -23,9 +23,9 @@ var getBasicBodyHandler = function(permissionName, logger, validationFn, handler
 };
 
 module.exports = {
-	getModelLister: function(model, logger, sort, postProcessFn) {
+	getModelLister(model, logger, sort, postProcessFn) {
 		return function(req, res, next) {
-			var query = model.find({});
+			let query = model.find({});
 			if(sort) {
 				query = query.sort(sort);
 			}
@@ -44,11 +44,11 @@ module.exports = {
 			next();
 		};
 	},
-	getModelCreator: function(DBModel, permissionName, logger, validationFn, postProcessFn) {
+	getModelCreator(DBModel, permissionName, logger, validationFn, postProcessFn) {
 		return getBasicBodyHandler(permissionName, logger, validationFn, function(req, res, obj) {
 			delete obj._id;
 
-			var save = function() {
+			let save = function() {
 				modelObj.save(function(err) {
 					if(err) {
 						logger.error(err);
@@ -59,7 +59,7 @@ module.exports = {
 				});
 			};
 
-			var modelObj = new DBModel(obj);
+			let modelObj = new DBModel(obj);
 			if(postProcessFn) {
 				if(postProcessFn.length > 1) {
 					postProcessFn(modelObj, save);
@@ -72,7 +72,7 @@ module.exports = {
 			}
 		});
 	},
-	getModelUpdater: function(model, parameterName, permissionName, logger, validationFn, postProcessFn) {
+	getModelUpdater(model, parameterName, permissionName, logger, validationFn, postProcessFn) {
 		return getBasicBodyHandler(permissionName, logger, validationFn, function(req, res, obj) {
 			delete obj._id;
 
@@ -104,7 +104,7 @@ module.exports = {
 			});
 		});
 	},
-	getModelDeleter: function(model, parameterName, permissionName, logger, postProcessFn) {
+	getModelDeleter(model, parameterName, permissionName, logger, postProcessFn) {
 		return function(req, res, next) {
 			if(!req.user || !req.user.permissions[permissionName]) {
 				return next(new restify.UnauthorizedError());
