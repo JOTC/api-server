@@ -1,9 +1,9 @@
-var db = require("../model/db");
-var log = require("bunyan").createLogger({ name: "officers component", level: "debug" });
-var fn = require("../common-fn");
+const db = require("../model/db");
+const log = require("bunyan").createLogger({ name: "officers component", level: "debug" });
+const fn = require("../common-fn");
 
-var isValidOfficer = function(officer) {
-	var valid = false;
+function isValidOfficer(officer) {
+	let valid = false;
 	if(officer) {
 		valid = true;
 		valid = valid && (officer.name && typeof officer.name === "string");
@@ -11,16 +11,16 @@ var isValidOfficer = function(officer) {
 		valid = valid && (officer.contacts && Array.isArray(officer.contacts));
 
 		if(valid) {
-			officer.titles.forEach(function(title) {
+			for(let title of officer.titles) {
 				valid = valid && (title && typeof title === "string");
-			});
+			};
 		}
 
 		if(valid) {
-			officer.contacts.forEach(function(contact) {
+			for(let contact of officer.contacts) {
 				valid = valid && (contact.type && (contact.type === "email" || contact.type === "phone"));
 				valid = valid && (contact.value && typeof contact.value === "string");
-			});
+			};
 		}
 	}
 
