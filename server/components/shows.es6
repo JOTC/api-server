@@ -1,14 +1,14 @@
-var restify = require("restify");
-var fs = require("fs-extra");
-var db = require("../model/db");
-var dates = require("../dateHelper");
-var fn = require("../common-fn");
-var log = require("bunyan").createLogger({ name: "shows component", level: "debug" });
-var config = require("../config");
-var path = require("path");
+const restify = require("restify");
+const fs = require("fs-extra");
+const db = require("../model/db");
+const dates = require("../dateHelper");
+const fn = require("../common-fn");
+const log = require("bunyan").createLogger({ name: "shows component", level: "debug" });
+const config = require("../config");
+const path = require("path");
 
-var isValidShow = function(show) {
-	var valid = false;
+function isValidShow(show) {
+	let valid = false;
 	if(show) {
 		valid = true;
 		valid = valid && (show.title && typeof show.title === "string");
@@ -26,39 +26,39 @@ var isValidShow = function(show) {
 	}
 	
 	if(valid) {
-		show.classes.forEach(function(c) {
+		for(let c of show.classes) {
 			valid = valid && (c && typeof c === "string");
-		});
+		};
 	}
 
 	return valid;
 };
 
-var isValidRecurringShow = function(show) {
-	var valid = false;
+function isValidRecurringShow(show) {
+	let valid = false;
 	if(show) {
 		valid = true;
 		valid = valid && (show.description && typeof show.description === "string");
 		valid = valid && (show.categories && Array.isArray(show.categories));
 
 		if(valid) {
-			show.categories.forEach(function(category) {
+			for(let category of show.categories) {
 				valid = valid && (category.name && typeof category.name === "string");
 				valid = valid && (category.classes && Array.isArray(category.classes));
 
 				if(valid) {
-					category.classes.forEach(function(c) {
+					for(let c of category.classes) {
 						valid = valid && (c && typeof c === "string");
-					});
+					};
 				}
-			});
+			};
 		}
 	}
 
 	return valid;
 };
 
-var moveRecurringShow = function(showID, direction, res) {
+function moveRecurringShow(showID, direction, res) {
 	if(+direction > 0) {
 		direction = 1;
 	} else {
@@ -104,26 +104,26 @@ var moveRecurringShow = function(showID, direction, res) {
 
 // __WWW_PATH is the relative path to this file
 // from the website
-var __WWW_PATH = "/files/shows";
+const __WWW_PATH = "/files/shows";
 
 // __FILE_PATH is the relative path to the file
 // from the server's working director
-var __FILE_PATH = config.www.getPath(__WWW_PATH);
+const __FILE_PATH = config.www.getPath(__WWW_PATH);
 
-var getObjectsInOrder = function(model, sortBy, callback) {
-	var sort = { };
+function getObjectsInOrder(model, sortBy, callback) {
+	const sort = { };
 	sort[sortBy] = "asc";
 
 	model.find({}).sort(sort).exec().then(callback);
 };
 
-var getFileUploadHandler = function() {
+function getFileUploadHandler() {
 	return function(req, res, next) {
 		if(!req.user || !req.user.permissions.shows) {
 			return next(new restify.UnauthorizedError());
 		}
 		
-		var handleError = function(err, ex) {
+		const handleError = function(err, ex) {
 			if(!ex) {
 				ex = new restify.InternalServerError();
 			}
@@ -175,7 +175,7 @@ var getFileUploadHandler = function() {
 	};
 };
 
-var getFileDeleteHandler = function() {
+function getFileDeleteHandler() {
 	return function(req, res, next) {
 		if(!req.user || !req.user.permissions.shows) {
 			return next(new restify.UnauthorizedError());
@@ -191,11 +191,9 @@ var getFileDeleteHandler = function() {
 				res.send(new restify.InternalServerError());
 			} else if(show) {
 				
-				var filename = "";
+				let filename = "";
 				
-				var files = show.files.filter(function(file) {
-					return (file._id.toString() === req.params.fileID);
-				});
+				const files = show.files.filter(file => file._id.toString() === req.params.fileID);
 				if(files.length > 0) {
 					filename = files[0].path;
 				}
@@ -244,12 +242,12 @@ module.exports = {
 						log.error(err);
 						res.send(500);
 					} else {
-						var shows = {
+						const shows = {
 							upcoming: [ ],
 							past: [ ]
 						};
 
-						var now = new Date();
+						const now = new Date();
 						objs.forEach(function(show) {
 							if(show.startDate > now || show.endDate > now) {
 								shows.upcoming.push(show);
