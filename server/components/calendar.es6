@@ -1,10 +1,10 @@
-var db = require("../model/db");
-var fn = require("../common-fn");
-var log = require("bunyan").createLogger({ name: "calendar component", level: "debug" });
-var restify = require("restify");
+const db = require("../model/db");
+const fn = require("../common-fn");
+const log = require("bunyan").createLogger({ name: "calendar component", level: "debug" });
+const restify = require("restify");
 
-var isValidCalendarEvent = function(event) {
-	var valid = false;
+function isValidCalendarEvent(event) {
+	let valid = false;
 	if(event) {
 		valid = true;
 		valid = valid && (event.title && typeof event.title === "string");
