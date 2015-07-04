@@ -1,18 +1,18 @@
-var restify = require("restify");
-var db = require("../model/db");
-var fs = require("fs");
-var path = require("path");
-var mkdirp = require("mkdirp");
-var log = require("bunyan").createLogger({ name: "image component", level: "debug" });
-var fn = require("../common-fn");
-var config = require("../config");
+const restify = require("restify");
+const db = require("../model/db");
+const fs = require("fs");
+const path = require("path");
+const mkdirp = require("mkdirp");
+const log = require("bunyan").createLogger({ name: "image component", level: "debug" });
+const fn = require("../common-fn");
+const config = require("../config");
 
-var ImageProcessor = require("./images.processor.js")();
+const ImageProcessor = require("./images.processor")();
 
-var __FILE_PATH = config.www.getPath("galleryImages");
+const __FILE_PATH = config.www.getPath("galleryImages");
 
-var isValidGallery = function(gallery) {
-	var valid = false;
+function isValidGallery(gallery) {
+	let valid = false;
 	if(gallery) {
 		valid = true;
 		valid = valid && (gallery.name && typeof gallery.name === "string");
@@ -46,8 +46,8 @@ module.exports = {
 		"/galleries/:galleryID": {
 			"put": fn.getModelUpdater(db.images.galleries, "galleryID", "pictures", log, isValidGallery),
 			"delete": fn.getModelDeleter(db.images.galleries, "galleryID", "pictures", log, function(gallery) {
-				for(var i = 0; i < gallery.images.length; i++) {
-					fs.unlinkSync(path.join(__FILE_PATH, gallery.images[i].path));
+				for(let image of gallery.images) {
+					fs.unlinkSync(path.join(__FILE_PATH, gallery.image.path));
 				}
 			})
 		},
@@ -57,7 +57,6 @@ module.exports = {
 					useBodyParser: false
 				},
 				function: function(req, res, next) {
-					
 					if(!validatePermissionsAndParameters(req, res, [ "galleryID" ])) {
 						return next();
 					}
@@ -72,17 +71,17 @@ module.exports = {
 							return next(new restify.NotFoundError());
 						}
 
-						var img = new db.images.images();
+						const img = new db.images.images();
 
-						var ext = req.headers["content-type"].replace(/image\//, "");
+						const ext = req.headers["content-type"].replace(/image\//, "");
 						img.path = img._id + "." + ext;
 
-						var filePath = path.join(__FILE_PATH, "temp");
+						let filePath = path.join(__FILE_PATH, "temp");
 						if(!fs.existsSync(filePath)) {
 							mkdirp.sync(filePath);
 						}
 						filePath = path.join(filePath, img.path);
-						var out = fs.createWriteStream(filePath);
+						const out = fs.createWriteStream(filePath);
 						req.pipe(out);
 
 						req.once("end", function() {
@@ -122,8 +121,8 @@ module.exports = {
 					return next();
 				}
 
-				var image = req.body;
-				if(image && typeof image === 'object' && typeof image.description === 'string') {
+				let image = req.body;
+				if(image && typeof image === "object" && typeof image.description === "string") {
 					image = { description: image.description };
 
 					db.images.galleries.findOne({ _id: req.params.galleryID }).exec(function(err, gallery) {
@@ -138,11 +137,11 @@ module.exports = {
 							return;
 						}
 
-						var foundImage = false;
-						for(var i = 0; i < gallery.images.length; i++) {
-							if(gallery.images[i]._id.toString() === req.params.imageID) {
-								gallery.images[i].name = image.name;
-								gallery.images[i].description = image.description;
+						let foundImage = false;
+						for(let galleryImage of gallery.images) {
+							if(galleryImage._id.toString() === req.params.imageID) {
+								galleryImage.name = image.name;
+								galleryImage.description = image.description;
 								foundImage = true;
 								break;
 							}
@@ -162,9 +161,7 @@ module.exports = {
 							}
 						});
 					});
-				}
-				else
-				{
+				} else {
 					log.error("Invalid image object");
 					log.error(image);
 					res.send(new restify.BadRequestError());
@@ -188,8 +185,8 @@ module.exports = {
 						return;
 					}
 
-					var imageFound = false;
-					for(var i = 0; i < gallery.images.length; i++) {
+					let imageFound = false;
+					for(let i = 0; i < gallery.images.length; i++) {
 						if(gallery.images[i]._id.toString() === req.params.imageID) {
 							fs.unlinkSync(path.join(__FILE_PATH, gallery.images[i].path));
 							gallery.images.splice(i, 1);
