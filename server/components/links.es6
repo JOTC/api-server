@@ -1,21 +1,21 @@
-var restify = require("restify");
-var db = require("../model/db");
-var fn = require("../common-fn");
-var log = require("bunyan").createLogger({ name: "links component", level: "debug" });
+const restify = require("restify");
+const db = require("../model/db");
+const fn = require("../common-fn");
+const log = require("bunyan").createLogger({ name: "links component", level: "debug" });
 
 function validateRequest(req, requiredIDs) {
 	if(!req.user || !req.user.permissions.links) {
 		return new restify.UnauthorizedError();
 	}
 
-	var error;
+	let error;
 
 	if(requiredIDs && Array.isArray(requiredIDs)) {
-		requiredIDs.forEach(function(requiredID) {
+		for(let requiredID of requiredIDs) {
 			if(!req.params[requiredID] || !/[0-9a-zA-Z]{24}/.test(req.params[requiredID])) {
 				error = new restify.BadRequestError();
 			}
-		});
+		};
 	}
 
 	return error;
@@ -30,7 +30,7 @@ function handleError(err, res, continueFn) {
 	}
 }
 
-var swapGroup = function(groupID, direction, res) {
+function swapGroup(groupID, direction, res) {
 	if(direction < 0) {
 		direction = -1;
 	} else {
@@ -43,7 +43,7 @@ var swapGroup = function(groupID, direction, res) {
 				db.linkGroups.findOne({ ordering: (group.ordering + direction) }).exec(function(err, swapGroup) {
 					handleError(err, res, function() {
 						if(swapGroup) {
-							var newOrder = swapGroup.ordering;
+							let newOrder = swapGroup.ordering;
 							swapGroup.ordering = group.ordering;
 							group.ordering = newOrder;
 
@@ -68,7 +68,7 @@ var swapGroup = function(groupID, direction, res) {
 	});
 };
 
-var swapLink = function(groupID, linkID, direction, res) {
+function swapLink(groupID, linkID, direction, res) {
 	if(direction < 0) {
 		direction = -1;
 	} else {
@@ -85,7 +85,7 @@ var swapLink = function(groupID, linkID, direction, res) {
 				}
 
 				if((index + direction) >= 0 && (index + direction) < group.links.length) {
-					var tmp = group.links[index + direction];
+					let tmp = group.links[index + direction];
 					group.links[index + direction] = group.links[index];
 					group.links[index] = tmp;
 
@@ -105,8 +105,8 @@ var swapLink = function(groupID, linkID, direction, res) {
 	});
 };
 
-var isValidGroup = function(group) {
-	var valid = false;
+function isValidGroup(group) {
+	let valid = false;
 	if(group) {
 		valid = true;
 		valid = valid && (group.name && typeof group.name === "string");
@@ -115,8 +115,8 @@ var isValidGroup = function(group) {
 	return valid;
 };
 
-var isValidLink = function(link) {
-	var valid = false;
+function isValidLink(link) {
+	let valid = false;
 	if(link) {
 		valid = true;
 		valid = valid && (link.name && typeof link.name === "string");
@@ -145,12 +145,12 @@ module.exports = {
 		"/links/:groupID": {
 			"put": fn.getModelUpdater(db.linkGroups, "groupID", "links", log, isValidGroup),
 			"post": function(req, res, next) {
-				var error = validateRequest(req, ["groupID"]);
+				const error = validateRequest(req, ["groupID"]);
 				if(error) {
 					return next(error);
 				}
 
-				var link = req.body;
+				const link = req.body;
 				if(isValidLink(link)) {
 					delete link._id;
 					db.linkGroups.findOne({ _id: req.params.groupID }).exec(function(err, group) {
@@ -178,7 +178,7 @@ module.exports = {
 		},
 		"/links/:groupID/up": {
 			"put": function(req, res, next) {
-				var error = validateRequest(req, ["groupID"]);
+				const error = validateRequest(req, ["groupID"]);
 				if(error) {
 					return next(error);
 				}
@@ -189,7 +189,7 @@ module.exports = {
 		},
 		"/links/:groupID/down": {
 			"put": function(req, res, next) {
-				var error = validateRequest(req, ["groupID"]);
+				const error = validateRequest(req, ["groupID"]);
 				if(error) {
 					return next(error);
 				}
@@ -200,18 +200,18 @@ module.exports = {
 		},
 		"/links/:groupID/:linkID": {
 			"put": function(req, res, next) {
-				var error = validateRequest(req, ["groupID", "linkID"]);
+				const error = validateRequest(req, ["groupID", "linkID"]);
 				if(error) {
 					return next(error);
 				}
 
-				var link = req.body;
+				const link = req.body;
 				if(isValidLink(link)) {
 					delete link._id;
 					db.linkGroups.findOne({ _id: req.params.groupID }).exec(function(err, group) {
 						handleError(err, res, function() {
 							if(group) {
-								var dbLink = group.links.id(req.params.linkID);
+								const dbLink = group.links.id(req.params.linkID);
 								if(dbLink) {
 									dbLink.name = link.name;
 									dbLink.url = link.url;
@@ -237,7 +237,7 @@ module.exports = {
 				next();
 			},
 			"delete": function(req, res, next) {
-				var error = validateRequest(req, ["groupID", "linkID"]);
+				const error = validateRequest(req, ["groupID", "linkID"]);
 				if(error) {
 					return next(error);
 				}
@@ -245,7 +245,7 @@ module.exports = {
 				db.linkGroups.findOne({ _id: req.params.groupID }).exec(function(err, group) {
 					handleError(err, res, function() {
 						if(group) {
-							var linkID = group.links.id(req.params.linkID);
+							const linkID = group.links.id(req.params.linkID);
 							if(!linkID) {
 								res.send(new restify.NotFoundError());
 								return;
@@ -268,7 +268,7 @@ module.exports = {
 		},
 		"/links/:groupID/:linkID/up": {
 			"put": function(req, res, next) {
-				var error = validateRequest(req, ["groupID", "linkID"]);
+				const error = validateRequest(req, ["groupID", "linkID"]);
 				if(error) {
 					return next(error);
 				}
@@ -279,7 +279,7 @@ module.exports = {
 		},
 		"/links/:groupID/:linkID/down": {
 			"put": function(req, res, next) {
-				var error = validateRequest(req, ["groupID", "linkID"]);
+				const error = validateRequest(req, ["groupID", "linkID"]);
 				if(error) {
 					return next(error);
 				}
