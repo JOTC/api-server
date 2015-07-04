@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mkdirp = require("mkdirp");
+const log = require("bunyan").createLogger({ name: "configurator", level: "debug" });
 
 const config = {
 	port: 9931,
@@ -46,7 +47,7 @@ try {
 	var configFile = require("./server-config.json");
 	mergeObjects(config, configFile);
 } catch(e) {
-	console.log(e);
+	log.error(e);
 }
 
 module.exports = config;

@@ -376,9 +376,7 @@ describe("Shows API", function() {
 			describe("With an invalid show ID and a valid but fake file ID", lib.statusAndJSON("delete", "/shows/abcd1234/file/abcd1234abcd1234abcd1234", lib.getCookie(true), null, 400));
 			describe("With a valid but fake show ID and an invalid file ID", lib.statusAndJSON("delete", "/shows/abcd1234abcd1234abcd1234/file/abcd1234", lib.getCookie(true), null, 400));
 			describe("With valid but fake show and file IDs", lib.statusAndJSON("delete", "/shows/abcd1234abcd1234abcd1234/file/abcd1234abcd1234abcd1234", lib.getCookie(true), null, 404));
-			describe("With valid and real show ID and valid but fake file ID", lib.statusAndJSON("delete", function() { return "/shows/" + getCreatedShowID() + "/file/abcd1234abcd1234abcd1234"; }, lib.getCookie(true), null, 404, function(response, body) {
-				it("thing", function() { console.log(body()); });
-			}));
+			describe("With valid and real show ID and valid but fake file ID", lib.statusAndJSON("delete", function() { return "/shows/" + getCreatedShowID() + "/file/abcd1234abcd1234abcd1234"; }, lib.getCookie(true), null, 404));
 			describe("With valid and real show and file IDs", lib.statusAndJSON("delete", urlFn, lib.getCookie(true), null, 200));
 		});
 	});

@@ -37,7 +37,7 @@
   "scripts": {
     "start": "node es6-wrapper.js",
     "coverage": "istanbul cover server.js",
-    "test": "mocha"
+    "test": "mocha --compilers js:babel/register"
   },
   "private": true
 }
