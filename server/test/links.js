@@ -1,17 +1,20 @@
-var should = require("should");
+/*eslint no-unused-expressions:0 */
+"use strict";
+
 var request = require("request");
+require("should");
 
 request.delete = request.del;
 
 var createdLinkGroupID;
 function getCreatedLinkGroupID() {
 	return createdLinkGroupID;
-};
+}
 
 var createdLinkID;
 function getCreatedLinkID() {
 	return createdLinkID;
-};
+}
 
 var lib = require("./lib");
 lib.init();
@@ -19,7 +22,7 @@ lib.init();
 var groups = [
 	{
 		name: "With an invalid group ID",
-		groupID: function() { return "abcd1234" },
+		groupID: function() { return "abcd1234"; },
 		successCase: 400,
 		links: [
 			{
@@ -145,7 +148,7 @@ describe("Links API", function() {
 		groups.forEach(function(group) {
 			describe(group.name, function() {
 				var urlFn = function(groupID) {
-					return function() { return "/links/" + group.groupID(); };
+					return function() { return "/links/" + groupID(); };
 				};
 				describe("Unauthenticated", lib.statusAndJSON("post", urlFn(group.groupID), null, { }, 401));
 				describe("As a real user without permission", lib.statusAndJSON("post", urlFn(group.groupID), lib.getCookie(false), { }, 401));
@@ -189,7 +192,7 @@ describe("Links API", function() {
 				group.links.forEach(function(link) {
 					describe(link.name, function() {
 						var urlFn = function(groupID, linkID) {
-							return function() { return "/links/" + group.groupID() + "/" + link.linkID(); };
+							return function() { return "/links/" + groupID() + "/" + linkID(); };
 						};
 
 						describe("Unauthenticated", lib.statusAndJSON("put", urlFn(group.groupID, link.linkID), null, { }, 401));
@@ -219,7 +222,7 @@ describe("Links API", function() {
 			it("each has an _id", function() {
 				body().forEach(function(group) {
 					group._id.should.match(/[0-9a-zA-Z]{24}/);
-				})
+				});
 			});
 
 			it("each has a name", function() {
@@ -232,7 +235,7 @@ describe("Links API", function() {
 			it("each has an ordering", function() {
 				body().forEach(function(group) {
 					group.ordering.should.be.a.number;
-				})
+				});
 			});
 
 			it("each has a list of links", function() {
@@ -303,15 +306,15 @@ describe("Links API", function() {
 			urlPostfix: ""
 		}
 	];
-	
+
 	var secondaryLinkCreated = false;
 	noBodyNoReturnTests.forEach(function(test) {
-		
+
 		describe(test.linkName, function() {
 			var urlFn = function(groupID, linkID) {
 				return function() { return "/links/" + groupID() + "/" + linkID() + test.urlPostfix; };
-			}
-			
+			};
+
 			before(function(done) {
 				if(!secondaryLinkCreated) {
 					request.post({ url: lib.getFullURL("/links/" + getCreatedLinkGroupID()), headers: { Cookie: lib.getCookie(true)() }, json: true, body: { name: "secondary-url", url: "secondary-url" } }, done);

@@ -1,11 +1,14 @@
-var should = require("should");
+/*eslint no-unused-expressions:0 */
+"use strict";
+
 var request = require("request");
+require("should");
 request.delete = request.del;
 
 var createdOfficerID;
 function getCreatedOfficerID() {
 	return createdOfficerID;
-};
+}
 
 var lib = require("./lib");
 lib.init();
@@ -60,7 +63,7 @@ describe("Officers API", function() {
 					it("has a titles array", function() {
 						body().titles.should.be.instanceOf(Array);
 					});
-				})
+				});
 			}));
 		});
 	});

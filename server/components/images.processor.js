@@ -1,3 +1,4 @@
+"use strict";
 var log = require("bunyan").createLogger({ name: "image processor", level: "debug" });
 
 var timeout = null;
@@ -13,6 +14,7 @@ process.on("message", function(info) {
         if(imagesProcessed >= 10) {
             clearTimeout(timeout);
             log.debug("Overheated image processor quitting");
+            /*eslint no-process-exit:0 */
             process.exit();
         }
     });
@@ -20,6 +22,7 @@ process.on("message", function(info) {
     clearTimeout(timeout);
     timeout = setTimeout(function() {
         log.debug("Idle image processor quitting");
+        /*eslint no-process-exit:0 */
         process.exit();
     }, 10000);
 });
@@ -28,6 +31,7 @@ module.exports = function ImageProcessor() {
     var fork = require("child_process").fork;
     var processor = null;
     var queue = new (require("corq"))(200, 1000);
+    var current = null;
 
     var getProcessor = function() {
         if(processor === null) {
@@ -48,7 +52,6 @@ module.exports = function ImageProcessor() {
         return processor;
     };
 
-    var current = null;
     queue.on("image", function(img, success) {
         current = { callback: img.callback, success: success };
         getProcessor().send({ inputPath: img.inputPath, outputPath: img.outputPath });

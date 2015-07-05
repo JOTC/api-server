@@ -1,13 +1,16 @@
+/*eslint no-unused-expressions:0 */
+"use strict";
+
 var db = require("../model/db");
-var should = require("should");
 var request = require("request");
 var bcrypt = require("bcryptjs");
+require("should");
 request.delete = request.del;
 
 var createdUserID;
 function getCreatedUserID() {
 	return createdUserID;
-};
+}
 
 var lib = require("./lib");
 lib.init();
@@ -34,14 +37,14 @@ var validUser = {
                     o1[p] = o2[p];
                 }
             });
-        }
+        };
         return merge(clone, o);
     }
 };
 
 var userIDs = [
     { fn: function() { return "abcd1234"; }, successStatus: 400 },
-    { fn: function() { return "abcd1234abcd1234abcd1234" }, successStatus: 404 },
+    { fn: function() { return "abcd1234abcd1234abcd1234"; }, successStatus: 404 },
     { fn: function() { return getCreatedUserID(); }, successStatus: 200 }
 ];
 
@@ -202,18 +205,18 @@ describe("Users API", function() {
     describe("Validate a user initialization token", function() {
         //"/auth/local/validate/:userID/:validationCode"
         var token;
-        var userID;
+        //var userID;
 
         var getToken = function() {
             return token;
         };
 
         before(function(done) {
-            db.users.findOne({ _id: getCreatedUserID() }, function(err, user) {
+            db.users.findOne({ _id: getCreatedUserID() }, function(_, user) {
                 token = require("crypto").randomBytes(16).toString("hex");
                 user.local.secret = "---init---" + bcrypt.hashSync(token);
                 user.save(function() {
-                    userID = user._id;
+                    //userID = user._id;
                     done();
                 });
             });
@@ -231,12 +234,10 @@ describe("Users API", function() {
         describe("With a valid and real user ID and real token", function() {
 
             var _response;
-            var _body;
 
             before(function(done) {
-                request.get({ url: lib.getFullURL(urlFn(true)()), followRedirect: false }, function(err, res, body) {
+                request.get({ url: lib.getFullURL(urlFn(true)()), followRedirect: false }, function(_, res) {
                     _response = res;
-                    _body = body;
                     done();
                 });
             });
@@ -255,7 +256,7 @@ describe("Users API", function() {
             });
 
             it("redirects to /#/resetPassword", function() {
-                _response.headers["location"].should.be.exactly("/#/resetPassword");
+                _response.headers.location.should.be.exactly("/#/resetPassword");
             });
         });
     });
@@ -270,7 +271,7 @@ describe("Users API", function() {
         function getCookie(valid) {
             return function() {
                 return (valid ? resetSessionCookie : "session=asdfasdfasdf");
-            }
+            };
         }
 
         describe("With no session or body", lib.statusAndJSON("put", "/auth/local/resetPassword", null, null, 400));
