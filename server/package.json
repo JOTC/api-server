@@ -37,7 +37,18 @@
   "scripts": {
     "start": "node es6-wrapper.js",
     "coverage": "istanbul cover server.js",
+    "pretest": "eslint .",
     "test": "mocha --compilers js:babel/register"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true,
+      "mocha": true
+    },
+    "rules": {
+      "no-underscore-dangle": 0
+    }
   },
   "private": true
 }

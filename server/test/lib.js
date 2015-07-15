@@ -1,8 +1,11 @@
-var dbUsers = require("../model/db").users;
-var should = require("should");
+/*eslint no-unused-expressions:0 */
+"use strict";
+
+var DBUsers = require("../model/db").users;
 var request = require("request");
 var crypto = require("crypto");
 var bcrypt = require("bcryptjs");
+require("should");
 
 request.delete = request.del;
 
@@ -29,11 +32,11 @@ function getCookie(withPermission) {
 	return function() {
 		return _users[withPermission ? "withPermission" : "withoutPermission"].cookie;
 	};
-};
+}
 
 function getAUserEmail() {
 	return _users.withoutPermission.email;
-};
+}
 
 function statusAndJSON(verb, url, cookieFn, body, expectedStatus, after) {
 	return function() {
@@ -48,15 +51,15 @@ function statusAndJSON(verb, url, cookieFn, body, expectedStatus, after) {
 			var urlOptions = { url: baseURL + url, json: true };
 			if(body && typeof body === "object") {
 				urlOptions.body = body;
-			};
+			}
 
 			if(typeof cookieFn === "function") {
 				urlOptions.headers = { Cookie: cookieFn() };
 			}
 
-			request[verb](urlOptions, function(err, res, body) {
+			request[verb](urlOptions, function(_, res, responseBody) {
 				_response = res;
-				_body = body;
+				_body = responseBody;
 				done();
 			});
 		});
@@ -71,7 +74,7 @@ function statusAndJSON(verb, url, cookieFn, body, expectedStatus, after) {
 
 		if(typeof after === "function") {
 			after(function() { return _response; }, function() { return _body; });
-		};
+		}
 	};
 }
 
@@ -85,8 +88,8 @@ module.exports = {
 			hasInitialized = true;
 
 			before(function(done) {
-				_users.withoutPermission.db = new dbUsers({ name: "Test User 1", email: _users.withoutPermission.email, local: { username: _users.withoutPermission.username, secret: bcrypt.hashSync(_users.withoutPermission.password) }, permissions: { "links": false, "officers": false, "shows": false, "classes": false, "pictures": false, "calendar": false, "users": false }});
-				_users.withPermission.db = new dbUsers({ name: "Test User 2", email: _users.withoutPermission.email, local: { username: _users.withPermission.username, secret: bcrypt.hashSync(_users.withPermission.password) }, permissions: { "links": true, "officers": true, "shows": true, "classes": true, "pictures": true, "calendar": true, "users": true }});
+				_users.withoutPermission.db = new DBUsers({ name: "Test User 1", email: _users.withoutPermission.email, local: { username: _users.withoutPermission.username, secret: bcrypt.hashSync(_users.withoutPermission.password) }, permissions: { "links": false, "officers": false, "shows": false, "classes": false, "pictures": false, "calendar": false, "users": false }});
+				_users.withPermission.db = new DBUsers({ name: "Test User 2", email: _users.withoutPermission.email, local: { username: _users.withPermission.username, secret: bcrypt.hashSync(_users.withPermission.password) }, permissions: { "links": true, "officers": true, "shows": true, "classes": true, "pictures": true, "calendar": true, "users": true }});
 
 				_users.withoutPermission.db.save(function() {
 					_users.withPermission.db.save(done);
@@ -94,7 +97,7 @@ module.exports = {
 			});
 
 			before(function(done) {
-				request.post("http://127.0.0.1:9931/auth/local", { form: { username: _users.withoutPermission.username, password: _users.withoutPermission.password }}, function(err, response, body) {
+				request.post("http://127.0.0.1:9931/auth/local", { form: { username: _users.withoutPermission.username, password: _users.withoutPermission.password }}, function(_, response) {
 					var cookie = response.headers["set-cookie"][0];
 					_users.withoutPermission.cookie = cookie.substr(0, cookie.indexOf(";"));
 					done();
@@ -102,7 +105,7 @@ module.exports = {
 			});
 
 			before(function(done) {
-				request.post("http://127.0.0.1:9931/auth/local", { form: { username: _users.withPermission.username, password: _users.withPermission.password }}, function(err, response, body) {
+				request.post("http://127.0.0.1:9931/auth/local", { form: { username: _users.withPermission.username, password: _users.withPermission.password }}, function(_, response) {
 					var cookie = response.headers["set-cookie"][0];
 					_users.withPermission.cookie = cookie.substr(0, cookie.indexOf(";"));
 					done();
