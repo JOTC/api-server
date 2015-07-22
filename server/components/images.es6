@@ -6,8 +6,7 @@ const mkdirp = require("mkdirp");
 const log = require("bunyan").createLogger({ name: "image component", level: "debug" });
 const fn = require("../common-fn");
 const config = require("../config");
-
-const ImageProcessor = require("./images.processor")();
+const imageProcessor = require("isolated-task-queue")("./components/images.processor");
 
 const __FILE_PATH = config.www.getPath("galleryImages");
 
@@ -89,13 +88,10 @@ module.exports = {
 								log.error(err);
 								res.send(new restify.InternalServerError());
 							} else {
-								ImageProcessor.process(filePath, path.join(__FILE_PATH, img.path), function(err) {
-									fs.unlink(filePath);
-
-									if(err) {
-										log.error(err);
-										res.send(new restify.InternalServerError());
-									} else {
+								imageProcessor.push({ inPath: filePath, outPath: path.join(__FILE_PATH, img.path) })
+									.then(function() {
+										fs.unlink(filePath);
+										
 										gallery.images.push(img);
 										gallery.save(function(err) {
 											if(err) {
@@ -105,8 +101,11 @@ module.exports = {
 												res.send(200, img);
 											}
 										});
-									}
-								});
+									})
+									.catch(function(err) {
+										log.error(err);
+										res.send(new restify.InternalServerError());
+									});
 							}
 						});
 
