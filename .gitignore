@@ -1,3 +1,5 @@
 config.json
 LOG
 coverage
+node_modules
+log
