@@ -39,7 +39,7 @@
   "scripts": {
     "coverage": "istanbul cover server.js",
     "pretest": "eslint .",
-    "start": "node es6-wrapper.js",
+    "start": "node es6-wrapper.js | bunyan",
     "test": "mocha --compilers js:babel/register"
   },
   "eslintConfig": {

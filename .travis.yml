@@ -1,0 +1,34 @@
+branches:
+  only:
+    - master
+
+notifications:
+  slack: jotc:Ok7TY1zpz3fxsdpZqnqZovfi
+
+addons:
+  code_climate:
+    repo_token: c8614cdb6659a8322430f42670387eb189eb2f6a9e5d75e1ea4f1e3ff3f1c0c1
+
+language: node_js
+node_js:
+  - "0.12"
+
+# Dependencies
+services:
+  - mongodb
+
+sudo:
+  - required
+
+before_script:
+  - curl -s https://raw.githubusercontent.com/lovell/sharp/master/preinstall.sh | sudo bash -
+  - npm install
+  - npm start &>/dev/null &
+# Currently broken because running coverage over ES6 via Babel is...  interesting.
+#  - npm run coverage &>/dev/null &
+  - sleep 5
+
+after_script:
+  - killall -SIGINT node
+  - sleep 5
+  - codeclimate < coverage/lcov.info
