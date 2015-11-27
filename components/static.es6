@@ -2,7 +2,7 @@ const db = require("../model/db");
 const dates = require("../dateHelper");
 const log = require("bunyan").createLogger({ name: "static site component", level: "debug" });
 
-const midnightToday = new Date(Date.now() - (midnightToday % 86400000));
+const midnightToday = new Date(Date.now() - (Date.now() % 86400000));
 
 const HTML_START = `<head>
 	<title>Jackson Obedience Training Club - JOTC</title>
@@ -162,7 +162,7 @@ function getLocationHTML(location) {
 }
 
 function getFilesHTML(files) {
-	html += "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
+	let html = "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
 	let first = true;
 	for(let file of files) {
 		if(!first) {
@@ -172,6 +172,7 @@ function getFilesHTML(files) {
 		first = false;
 	}
 	html += "</div>";
+	return html;
 }
 
 function getShowsHTML(shows) {
@@ -237,7 +238,7 @@ function getClassesHTML(classes) {
 		}
 
 		if(clss.registrationFormPath) {
-			html += getFilesHTML([ clss.registrationFormPath ]);
+			html += getFilesHTML([{ name: "Registration Form", path: clss.registrationFormPath }]);
 		}
 
 		let basicClasses = [ ];
@@ -305,7 +306,6 @@ module.exports = {
 					output += HTML_MIDDLE;
 
 					db.classes.classes.find({ endDate: { $gte: midnightToday }}).sort({ "startDate": "asc" }).exec().then(classes => {
-						console.log(classes);
 						output += getClassesHTML(classes);
 						output += HTML_END;
 						send(output, res);
