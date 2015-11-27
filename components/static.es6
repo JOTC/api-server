@@ -2,6 +2,8 @@ const db = require("../model/db");
 const dates = require("../dateHelper");
 const log = require("bunyan").createLogger({ name: "static site component", level: "debug" });
 
+const midnightToday = new Date(Date.now() - (midnightToday % 86400000));
+
 const HTML_START = `<head>
 	<title>Jackson Obedience Training Club - JOTC</title>
 	<style type="text/css">
@@ -10,7 +12,7 @@ const HTML_START = `<head>
 			font-family: 'Roboto';
 			font-style: normal;
 			font-weight: 400;
-			src: local('Roboto Regular'), local('Roboto-Regular'), url(css/Roboto-Regular.woff) format('woff');
+			src: local('Roboto Regular'), local('Roboto-Regular'), url(/style/Roboto-Regular.woff) format('woff');
 		}
 
 		@font-face
@@ -18,14 +20,14 @@ const HTML_START = `<head>
 			font-family: 'Roboto';
 			font-style: normal;
 			font-weight: 700;
-			src: local('Roboto Bold'), local('Roboto-Bold'), url(css/Roboto-Bold.woff) format('woff');
+			src: local('Roboto Bold'), local('Roboto-Bold'), url(/style/Roboto-Bold.woff) format('woff');
 		}
 
 		@font-face {
 		  font-family: 'Cinzel Decorative';
 		  font-style: normal;
 		  font-weight: 900;
-		  src: local('Cinzel Decorative Black'), local('CinzelDecorative-Black'), url(css/cinzel_decorative.woff) format('woff');
+		  src: local('Cinzel Decorative Black'), local('CinzelDecorative-Black'), url(/style/cinzel_decorative.woff) format('woff');
 		}
 
 		body
@@ -55,7 +57,7 @@ const HTML_START = `<head>
 </head>
 <body>
 <div id="header">
-	<img align="top" src="media/jotc_logo_color.ie.png">
+	<img align="top" src="/media/jotc_logo_color.ie.png">
 	<div style="display: inline-block; *zoom: 1; *display: inline; margin-top: 15px; text-align: center;">
 		<div style="font-size: 2.5em; line-height: 0.9em; font-weight: bold; padding-bottom: 10px;">Jackson Obedience<br>Training Club</div>
 		<span style="font-style: italic;">Teaching You to Train Your Dog</span>
@@ -68,6 +70,21 @@ JOTC sponsors obedience and rally trials, as well as offering training classes a
 <br><br>
 <a href='#shows'>Upcoming Shows</a> | <a href='#classes'>Obedience Classes</a>
 <br><br>`;
+
+const HTML_MIDDLE = `<br>
+<h2 id='classes'>Obedience Classes</h2>
+JOTC currently offers classes four times a year: twice in the spring and twice in the fall. North classes are conducted through the city of Ridgeland and are held at the Old Trace Park on the Reservoir at Fowler Lodge. These classes usually begin the last Tuesday in March and the last Tuesday in August. South classes are currently being held at the old Home Depot location on Robinson Road in Jackson. These usually begin the first Thursday in April and the second Thursday in September. These classes last about an hour one night a week for 6 weeks, including a graduation night.
+<br><br>
+For more information about JOTC classes, please call the Dog Line at <span style='font-weight: bold;'>(601) 352-DOGS (3647)</span>.
+<br><br>
+JOTC offers the following classes:
+<ul>
+<li><span style='font-weight: bold;'>Puppy Manners</span> (3-5 months of age): This class is specially tailored to a puppy's limited attention span. You learn how to teach basic obedience commands and receive tips on socialization, care, and raising a puppy.</li>
+<li style='margin-top: 10px;'><span style='font-weight: bold;'>Basic Obedience</span> (6 months of age and older): This class teaches basic obedience commands such as heel, sit, down, stay, come, and other commands that you will use in everyday life with your pet.</li>
+<li style='margin-top: 10px;'><span style='font-weight: bold;'>CGC/Advanced</span> (requires basic obedience): Builds on the basic obedience class and teaches the exercises necessary to obtain AKC's Canine Good Citizen (CGC) certification.</li>
+<li style='margin-top: 10px;'><span style='font-weight: bold;'>Rally</span> (requires basic obedience): Super duper rally class.</li>
+</ul>
+<br>`;
 
 const HTML_END = `Why should you train your dog?
 <ul>
@@ -100,26 +117,26 @@ General Information
 
 <div style="background-color: #024; color: white; padding: 5px; font-size: 0.8em; text-align: center;">
 	This website has been simplified to support this browser.  It works much better in newer
-	browsers such as Chrome, Firefox, or Internet Explorer 10.  For your convenience,
+	browsers such as Chrome, Firefox, or Internet Explorer 11.  For your convenience,
 	links to these newer browsers are provided below.  If you would like to upgrade, just click
 	the browser you would like and follow the installation instructions.<br><br>
 
 	<div style="display: inline-block; *zoom: 1; *display: inline; margin: 0 30px;">
 		<a style="border: 0; color: white; text-decoration: none;" href="https://www.google.com/intl/en_us/chrome/browser/">
-			<img src="media/browser_chrome.png">
+			<img src="/media/browser_chrome.png">
 			<br><span style="text-decoration: underline;">Chrome</span>
 		</a>
 	</div>
 	<div style="display: inline-block; *zoom: 1; *display: inline; margin: 0 30px;">
 		<a style="border: 0; color: white; text-decoration: none;" href="http://www.mozilla.org/en-US/firefox/new/">
-			<img src="media/browser_firefox.png">
+			<img src="/media/browser_firefox.png">
 			<br><span style="text-decoration: underline;">Firefox</span>
 		</a>
 	</div>
 	<div style="display: inline-block; *zoom: 1; *display: inline; margin: 0 30px;">
-		<a style="border: 0; color: white; text-decoration: none;" href="http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages">
-			<img src="media/browser_ie10.png">
-			<br><span style="text-decoration: underline;">IE 10</span>
+		<a style="border: 0; color: white; text-decoration: none;" href="https://www.microsoft.com/en-us/download/internet-explorer-11-for-windows-7-details.aspx">
+			<img src="/media/browser_ie10.png">
+			<br><span style="text-decoration: underline;">IE 11</span>
 		</a>
 	</div>
 </div>
@@ -144,59 +161,133 @@ function getLocationHTML(location) {
 	return `<h3 style='margin-bottom: 0;'>Location</h3><div style='margin-left: 30px;'>${location}<br><a href='https://maps.google.com/maps?q=${urlLoc}' target='_blank'><img src='http://maps.googleapis.com/maps/api/staticmap?sensor=false&zoom=11&size=200x150&center=${urlLoc}}&markers=${urlLoc}}'><br>Click for directions</a></div>`;
 }
 
+function getFilesHTML(files) {
+	html += "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
+	let first = true;
+	for(let file of files) {
+		if(!first) {
+			html += "<br>";
+		}
+		html += `<a href=${file.path}>${file.name}</a>`;
+		first = false;
+	}
+	html += "</div>";
+}
+
 function getShowsHTML(shows) {
 	const now = new Date();
 	let html = false;
 
 	for(let show of shows) {
-		if(show.startDate > now || show.endDate > now) {
-			if(!html) {
-				html = "<h2 id='shows'>Upcoming Shows</h2>JOTC is sponsoring the following upcoming shows:<ol>";
-			}
-			html += "<li style='border 1px solid black; padding 10px; background-color: white;'>";
-			html += `<span style='font-weight: bold;'>${dates.stringDateRange(show.startDate, show.endDate)}, ${show.title}</span>`;
-			html += `<br>Registration ends ${getDateString(show.registrationDeadline)}`;
-
-			if(show.description) {
-				html += `<br><br>${show.description}`;
-			}
-
-			if(show.classes.length) {
-				html += "<br><br>The following competition classes are included:<ul>";
-				for(let c of show.classes) {
-					html += `<li>${c}</li>`;
-				}
-				html += "</ul>";
-			}
-
-			if(show.location) {
-				html += getLocationHTML(show.location);
-			}
-
-			if(show.registrationLink) {
-				html += `<h3 style='margin-bottom: 0;'>Registration</h3><div style='margin-left: 30px;'><a href='${show.registrationLink}' target='_blank'>Click here to register</a></div>`;
-			}
-
-			if(show.files.length) {
-				html += "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
-				let first = true;
-				for(let file of show.files) {
-					if(!first) {
-						html += "<br>";
-					}
-					html += `<a href=${file.path}>${file.name}</a>`;
-					first = false;
-				}
-				html += "</div>";
-			}
-
-			html += "</li>";
+		if(!html) {
+			html = "<h2 id='shows'>Upcoming Shows</h2>JOTC is sponsoring the following upcoming shows:<ol>";
 		}
+		html += "<li style='border 1px solid black; padding 10px; background-color: white;'>";
+		html += `<span style='font-weight: bold;'>${dates.stringDateRange(show.startDate, show.endDate)}, ${show.title}</span>`;
+		html += `<br>Registration ends ${getDateString(show.registrationDeadline)}`;
+
+		if(show.description) {
+			html += `<br><br>${show.description}`;
+		}
+
+		if(show.classes.length) {
+			html += "<br><br>The following competition classes are included:<ul>";
+			for(let c of show.classes) {
+				html += `<li>${c}</li>`;
+			}
+			html += "</ul>";
+		}
+
+		if(show.location) {
+			html += getLocationHTML(show.location);
+		}
+
+		if(show.registrationLink) {
+			html += `<h3 style='margin-bottom: 0;'>Registration</h3><div style='margin-left: 30px;'><a href='${show.registrationLink}' target='_blank'>Click here to register</a></div>`;
+		}
+
+		if(show.files.length) {
+			html += getFilesHTML(show.files);
+		}
+
+		html += "</li>";
 	}
 	if(html) {
 		html += "</ol>";
 	} else {
 		html = "No upcoming shows.<br>";
+	}
+
+	return html;
+}
+
+function getClassesHTML(classes) {
+	let html = false;
+
+	for(let clss of classes) {
+		if(!html) {
+			html = "JOTC is offering the following upcoming classes:<ol>";
+		}
+
+		html += `<li style='border: 1px solid black; padding: 10px; background-color: white;'><span style='font-weight: bold;'>Starting ${getDateString(clss.startDate)}</span>`;
+		html += `<br><br>Classes meet every ${dates.days[clss.startDate.getUTCDay()]} at ${clss.timeOfDay} for ${clss.hoursPerWeek} hour${clss.hoursPerWeek === 1 ? '' : 's'} and last ${clss.numberOfWeeks} weeks, including a graduation night.`;
+
+		if(clss.location) {
+			html += getLocationHTML(clss.location);
+		}
+
+		if(clss.registrationFormPath) {
+			html += getFilesHTML([ clss.registrationFormPath ]);
+		}
+
+		let basicClasses = [ ];
+		let advancedClasses = [ ];
+
+		for(let type of clss.classTypes) {
+			if(type.isAdvanced) {
+				advancedClasses.push(type);
+			} else {
+				basicClasses.push(type);
+			}
+		}
+
+		for(let i = 0; i < basicClasses.length; i++) {
+			if(i > 0) {
+				if(i === basicClasses.length - 1) {
+					if(i > 1) {
+						html += ", ";
+					}
+					html += " and ";
+				} else {
+					html += ", ";
+				}
+			}
+			html += `<span style='font-weight:bold;'>${basicClasses[i].name}</span>`
+		}
+		if(basicClasses.length) {
+			html += " classes will be offered.";
+		}
+
+		for(let i = 0; i < advancedClasses.length; i++) {
+			if(i > 0) {
+				html += ", ";
+				if(i > 1 && i === advancedClasses.length - 1) {
+					html += "and ";
+				}
+			}
+			html += `<span style='font-weight:bold;'>${advancedClasses[i].name}</span>`
+		}
+		if(advancedClasses.length) {
+			html += ` classes will${basicClasses.length ? " also" : ""} be offered if enough dogs enroll (${advancedClasses.length === 1 ? "This class" : "These classes"} require${advancedClasses.length === 1 ? "s" : ""} that the dog previously completed the JOTC Basic Obedience course).`;
+		}
+
+		html += "</li>";
+	}
+
+	if(html) {
+		html += "</ol>";
+	} else {
+		html = "";
 	}
 
 	return html;
@@ -209,11 +300,16 @@ module.exports = {
 			"get"(req, res, next) {
 				let output = HTML_START;
 
-				db.shows.shows.find({}).sort({ "startDate": "asc" }).exec().then(shows => {
-					console.log(shows);
+				db.shows.shows.find({ endDate: { $gte: midnightToday }}).sort({ "startDate": "asc" }).exec().then(shows => {
 					output += getShowsHTML(shows);
-					output += HTML_END;
-					send(output, res);
+					output += HTML_MIDDLE;
+
+					db.classes.classes.find({ endDate: { $gte: midnightToday }}).sort({ "startDate": "asc" }).exec().then(classes => {
+						console.log(classes);
+						output += getClassesHTML(classes);
+						output += HTML_END;
+						send(output, res);
+					});
 				});
 
 				next();
