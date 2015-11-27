@@ -162,7 +162,7 @@ function getLocationHTML(location) {
 }
 
 function getFilesHTML(files) {
-	html += "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
+	let html = "<h3 style='margin-bottom: 0;'>Available Downloads:</h3><div style='margin-left: 30px;'>";
 	let first = true;
 	for(let file of files) {
 		if(!first) {
@@ -172,6 +172,7 @@ function getFilesHTML(files) {
 		first = false;
 	}
 	html += "</div>";
+	return html;
 }
 
 function getShowsHTML(shows) {
