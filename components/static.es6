@@ -238,7 +238,7 @@ function getClassesHTML(classes) {
 		}
 
 		if(clss.registrationFormPath) {
-			html += getFilesHTML([ clss.registrationFormPath ]);
+			html += getFilesHTML([{ name: "Registration Form", path: clss.registrationFormPath }]);
 		}
 
 		let basicClasses = [ ];
@@ -306,7 +306,6 @@ module.exports = {
 					output += HTML_MIDDLE;
 
 					db.classes.classes.find({ endDate: { $gte: midnightToday }}).sort({ "startDate": "asc" }).exec().then(classes => {
-						console.log(classes);
 						output += getClassesHTML(classes);
 						output += HTML_END;
 						send(output, res);
