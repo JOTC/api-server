@@ -2,7 +2,7 @@ const db = require("../model/db");
 const dates = require("../dateHelper");
 const log = require("bunyan").createLogger({ name: "static site component", level: "debug" });
 
-const midnightToday = new Date(Date.now() - (midnightToday % 86400000));
+const midnightToday = new Date(Date.now() - (Date.now() % 86400000));
 
 const HTML_START = `<head>
 	<title>Jackson Obedience Training Club - JOTC</title>
