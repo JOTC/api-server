@@ -17,7 +17,7 @@ const config = {
 		getPath(pathSegment) {
 			let fullPath = path.join(config.www.root, pathSegment);
 			if(!fs.existsSync(fullPath)) {
-				fs.mkdirp.sync(fullPath);
+				fs.mkdirpSync(fullPath);
 			}
 
 			return fullPath;
