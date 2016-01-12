@@ -76,7 +76,7 @@ module.exports = {
 
 						let filePath = path.join(__FILE_PATH, "temp");
 						if(!fs.existsSync(filePath)) {
-							fs.mkdirp.sync(filePath);
+							fs.mkdirpSync(filePath);
 						}
 						filePath = path.join(filePath, img.path);
 						const out = fs.createWriteStream(filePath);
