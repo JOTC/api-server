@@ -31,11 +31,7 @@ services:
  # - required
 
 before_script:
-#  - curl -s https://raw.githubusercontent.com/lovell/sharp/master/preinstall.sh | sudo bash -
-  - npm install npm@latest -g
-  - npm install
-  - npm start &
-# &>/dev/null &
+  - npm start &>/dev/null &
 # Currently broken because running coverage over ES6 via Babel is...  interesting.
 #  - npm run coverage &>/dev/null &
   - sleep 5
