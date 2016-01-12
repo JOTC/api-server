@@ -236,8 +236,11 @@ module.exports = {
 											log.error(err);
 											res.send(new restify.InternalServerError());
 										} else {
-											req.session.passport.user = user._id;
 											res.send(200, { });
+											if(!req.session.passport) {
+												req.session.passport = { };
+											}
+											req.session.passport.user = user._id;
 										}
 									});
 								} else {
