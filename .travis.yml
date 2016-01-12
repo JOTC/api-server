@@ -3,11 +3,12 @@ branches:
     - master
 
 notifications:
+  email: false
   slack: jotc:Ok7TY1zpz3fxsdpZqnqZovfi
 
 addons:
   code_climate:
-    repo_token: c8614cdb6659a8322430f42670387eb189eb2f6a9e5d75e1ea4f1e3ff3f1c0c1
+    repo_token: 3ac41b4e23ebcc5ef00f749e8d111792045f651929bb23bba75396a6717522e3
 
 language: node_js
 node_js:
