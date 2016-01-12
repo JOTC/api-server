@@ -12,17 +12,17 @@ addons:
 
 language: node_js
 node_js:
-  - "0.12"
+  - "4.2"
 
 # Dependencies
 services:
   - mongodb
 
-sudo:
-  - required
+#sudo:
+ # - required
 
 before_script:
-  - curl -s https://raw.githubusercontent.com/lovell/sharp/master/preinstall.sh | sudo bash -
+#  - curl -s https://raw.githubusercontent.com/lovell/sharp/master/preinstall.sh | sudo bash -
   - npm install
   - npm start &>/dev/null &
 # Currently broken because running coverage over ES6 via Babel is...  interesting.

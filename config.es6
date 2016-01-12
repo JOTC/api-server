@@ -1,6 +1,5 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
-const mkdirp = require("mkdirp");
 const log = require("bunyan").createLogger({ name: "configurator", level: "debug" });
 
 const config = {
@@ -18,7 +17,7 @@ const config = {
 		getPath(pathSegment) {
 			let fullPath = path.join(config.www.root, pathSegment);
 			if(!fs.existsSync(fullPath)) {
-				mkdirp.sync(fullPath);
+				fs.mkdirp.sync(fullPath);
 			}
 
 			return fullPath;

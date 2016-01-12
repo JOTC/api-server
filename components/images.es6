@@ -1,8 +1,7 @@
 const restify = require("restify");
 const db = require("../model/db");
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
-const mkdirp = require("mkdirp");
 const log = require("bunyan").createLogger({ name: "image component", level: "debug" });
 const fn = require("../common-fn");
 const config = require("../config");
@@ -25,7 +24,7 @@ function validatePermissionsAndParameters(req, res, params) {
 		res.send(new restify.UnauthorizedError());
 		return false;
 	}
-	
+
 	return params.every(function(param) {
 		if(/[0-9a-zA-Z]{24}/.test(req.params[param])) {
 			 return true;
@@ -65,7 +64,7 @@ module.exports = {
 							log.error(err);
 							return next(new restify.InternalServerError());
 						}
-						
+
 						if(!gallery) {
 							return next(new restify.NotFoundError());
 						}
@@ -77,7 +76,7 @@ module.exports = {
 
 						let filePath = path.join(__FILE_PATH, "temp");
 						if(!fs.existsSync(filePath)) {
-							mkdirp.sync(filePath);
+							fs.mkdirp.sync(filePath);
 						}
 						filePath = path.join(filePath, img.path);
 						const out = fs.createWriteStream(filePath);
@@ -91,7 +90,7 @@ module.exports = {
 								imageProcessor.push({ inPath: filePath, outPath: path.join(__FILE_PATH, img.path) })
 									.then(function() {
 										fs.unlink(filePath);
-										
+
 										gallery.images.push(img);
 										gallery.save(function(err) {
 											if(err) {
@@ -130,7 +129,7 @@ module.exports = {
 							res.send(new restify.InternalServerError());
 							return;
 						}
-						
+
 						if(!gallery) {
 							res.send(new restify.NotFoundError());
 							return;
@@ -145,7 +144,7 @@ module.exports = {
 								break;
 							}
 						}
-						
+
 						if(!foundImage) {
 							res.send(new restify.NotFoundError());
 							return;
@@ -178,7 +177,7 @@ module.exports = {
 						res.send(new restify.InternalServerError());
 						return;
 					}
-					
+
 					if(!gallery) {
 						res.send(new restify.NotFoundError());
 						return;
