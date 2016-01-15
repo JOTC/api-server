@@ -28,7 +28,7 @@ services:
   - mongodb
 
 before_script:
-  - npm run coverage &
+  - npm run coverage
 #>/dev/null &
   - sleep 10
 
