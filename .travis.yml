@@ -28,9 +28,8 @@ services:
   - mongodb
 
 before_script:
-  - npm run coverage
-#>/dev/null &
-  - sleep 10
+  - npm run coverage >/dev/null &
+  - sleep 30
 
 after_script:
   - killall -SIGINT node
