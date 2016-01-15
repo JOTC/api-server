@@ -27,14 +27,9 @@ addons:
 services:
   - mongodb
 
-#sudo:
- # - required
-
 before_script:
-  - npm start &>/dev/null &
-# Currently broken because running coverage over ES6 via Babel is...  interesting.
-#  - npm run coverage &>/dev/null &
-  - sleep 5
+  - npm run coverage &>/dev/null &
+  - sleep 10
 
 after_script:
   - killall -SIGINT node
