@@ -31,8 +31,8 @@
     "should": "^8.1.1"
   },
   "scripts": {
-    "coverage": "babel-istanbul cover server.es6",
-    "pretest": "eslint . --ext .es6 --env es6,node",
+    "coverage": "babel-istanbul cover server.js",
+    "pretest": "eslint . --env es6,node",
     "start": "node es6-wrapper.js | bunyan",
     "test": "mocha --compilers js:babel-register"
   },
