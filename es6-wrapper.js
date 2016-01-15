@@ -1,4 +1,2 @@
-require("babel-register")({
-	extensions: [ ".es6" ]
-});
-require("./server.es6");
+require("babel-register")();
+require("./server");
