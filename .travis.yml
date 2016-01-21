@@ -34,4 +34,4 @@ before_script:
 after_script:
   - killall -SIGINT node
   - sleep 5
-  - codeclimate < coverage/lcov.info
+  - codeclimate-test-reporter < coverage/lcov.info
