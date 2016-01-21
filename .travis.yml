@@ -6,10 +6,6 @@ notifications:
   email: false
   slack: jotc:Ok7TY1zpz3fxsdpZqnqZovfi
 
-addons:
-  code_climate:
-    repo_token: 3ac41b4e23ebcc5ef00f749e8d111792045f651929bb23bba75396a6717522e3
-
 language: node_js
 node_js:
   - "4.2"
@@ -34,4 +30,4 @@ before_script:
 after_script:
   - killall -SIGINT node
   - sleep 5
-  - codeclimate-test-reporter < coverage/lcov.info
+  - CODECLIMATE_REPO_TOKEN=3ac41b4e23ebcc5ef00f749e8d111792045f651929bb23bba75396a6717522e3 ./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info
