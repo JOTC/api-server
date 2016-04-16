@@ -19,7 +19,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "restify": "^4.0.3",
-    "sharp": "~0.13.1"
+    "sharp": "~0.14.1"
   },
   "devDependencies": {
     "babel-istanbul": "^0.7.0",
