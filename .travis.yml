@@ -24,9 +24,8 @@ after_script:
 - sleep 5
 - CODECLIMATE_REPO_TOKEN=3ac41b4e23ebcc5ef00f749e8d111792045f651929bb23bba75396a6717522e3
   ./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info
-before_install:
-- openssl aes-256-cbc -K $encrypted_20f25f543587_key -iv $encrypted_20f25f543587_iv
-  -in deploy/deploy.key.enc -out deploy/deploy.key -d
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_20f25f543587_key -iv $encrypted_20f25f543587_iv -in deploy/deploy.key.enc -out deploy/deploy.key -d
 deploy:
   provider: script
   script: deploy/run.sh
