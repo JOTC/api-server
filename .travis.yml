@@ -3,7 +3,9 @@ notifications:
   slack: jotc:Ok7TY1zpz3fxsdpZqnqZovfi
 language: node_js
 node_js:
-- '4.2'
+- '6.3'
+- '6.9'
+- '7.0'
 env:
 - CXX=g++-4.8
 addons:

@@ -41,6 +41,9 @@
       "es2015"
     ]
   },
+  "engines": {
+    "node": "^6.3.0"
+  },
   "eslintConfig": {
     "env": {
       "browser": true,
