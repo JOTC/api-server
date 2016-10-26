@@ -131,7 +131,9 @@ function getFileUploadHandler() {
 			log.error(err);
 			res.send(ex);
 
-			require("fs").unlinkSync(req.files.file.path);
+			if(req.files && req.files.file && req.files.file.path) {
+				require("fs").unlinkSync(req.files.file.path);
+			}
 		};
 
 		if(!/[0-9a-zA-Z]{24}/.test(req.params.showID)) {

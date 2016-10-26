@@ -93,7 +93,7 @@ module.exports = {
 					res.send(new restify.InternalServerError());
 					require("fs").unlinkSync(req.files.file.path);
 				};
-				
+
 				if(!/[0-9a-zA-Z]{24}/.test(req.params.classID)) {
 					return next(new restify.BadRequestError());
 				}
@@ -123,7 +123,9 @@ module.exports = {
 						});
 					} else {
 						res.send(new restify.NotFoundError());
-						require("fs").unlinkSync(req.files.file.path);
+						if(req.files && req.files.file && req.files.file.path) {
+							require("fs").unlinkSync(req.files.file.path);
+						}
 						next();
 					}
 				});
@@ -132,7 +134,7 @@ module.exports = {
 				if(!req.user || !req.user.permissions.classes) {
 					return next(new restify.UnauthorizedError());
 				}
-				
+
 				if(!/[0-9a-zA-Z]{24}/.test(req.params.classID)) {
 					return next(new restify.BadRequestError());
 				}
