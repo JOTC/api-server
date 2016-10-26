@@ -3,7 +3,7 @@ const path = require("path");
 const log = require("bunyan").createLogger({ name: "configurator", level: "debug" });
 
 const config = {
-	port: 9931,
+	port: process.env["PORT"] || 9931,
 	session: {
 		secret: "session-secret-key",
 		lifetimeInDays: 10
