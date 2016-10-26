@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/jotc");
+mongoose.connect(process.env["MONGO_URL"] || "mongodb://localhost/jotc");
 
 module.exports = {
 	calendar: require("./calendar"),
