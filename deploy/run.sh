@@ -10,6 +10,8 @@ echo "three"
 ssh-add deploy/deploy.key
 echo "four"
 git remote add deploy dokku@darkcooger.net:jotc-staging.darkcooger.net
+echo "four-point-five"
+cat deploy/ssh-signature >> ~/.ssh/known_hosts
 echo "five"
 git push deploy master
 echo "six"
