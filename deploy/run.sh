@@ -13,5 +13,5 @@ git remote add deploy dokku@darkcooger.net:jotc-staging.darkcooger.net
 echo "four-point-five"
 ssh -o "StrictHostKeyChecking no" darkcooger.net
 echo "five"
-git push deploy master
+git push deploy development:master
 echo "six"

@@ -29,6 +29,7 @@ deploy:
   script: deploy/run.sh
   on:
     branch: development
+    node: '6.9'
 before_install:
 - openssl aes-256-cbc -K $encrypted_20f25f543587_key -iv $encrypted_20f25f543587_iv
   -in deploy/deploy.key.enc -out deploy/deploy.key -d
