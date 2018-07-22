@@ -71,7 +71,7 @@ module.exports = {
 					text:	`Dear ${obj.name},\n\nAn account has been created for you on the ` +
 							`Jackson Obedience Training Club website. Before you can log in, you must enable ` +
 							`your account and set a password. To do that, please click the following link:\n\n` +
-							`http://jotc.org/data2/auth/local/validate/${obj._id}/${token}\n\n` +
+							`https://jotc.org/data2/auth/local/validate/${obj._id}/${token}\n\n` +
 							`After you have set your password, you will immediately be logged in and ` +
 							`redirected to to the JOTC website. After that, you may log in again whenever ` +
 							`you need to by simply visiting the JOTC website and clicking the [Login] link ` +
@@ -152,7 +152,7 @@ module.exports = {
 										subject: "JOTC Website Password Reset",
 										text:	`Dear ${user.name},\n\nYour password on Jackson Obedience Training Club ` +
 												`website is ready to be reset.  To do that, please click the following link:\n\n` +
-												`http://jotc.org/data2/auth/local/validate/${user._id}/${token}\n\n` +
+												`https://jotc.org/data2/auth/local/validate/${user._id}/${token}\n\n` +
 												`After you have set your password, you will immediately be logged in and ` +
 												`redirected to to the JOTC website. After that, you may log in again whenever ` +
 												`you need to by simply visiting the JOTC website and clicking the [Login] link ` +
