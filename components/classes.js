@@ -122,8 +122,8 @@ module.exports = {
 							}
 						});
 					} else {
-						res.send(new restify.NotFoundError());
 						require("fs").unlinkSync(req.files.file.path);
+						res.send(new restify.NotFoundError());
 						next();
 					}
 				});

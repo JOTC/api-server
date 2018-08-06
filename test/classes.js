@@ -235,7 +235,32 @@ describe("Classes API", function() {
 		describe("As a valid user without permission", lib.statusAndJSON("post", urlFn, lib.getCookie(false), null, 401));
 		describe("As a valid user with permission", function() {
 			describe("With an invalid class ID", lib.statusAndJSON("post", "/classes/abcd1234/registrationForm", lib.getCookie(true), null, 400));
-			describe("With a valid but fake class ID", lib.statusAndJSON("post", "/classes/abcd1234abcd1234abcd1234/registrationForm", lib.getCookie(true), null, 404));
+			describe("With a valid but fake class ID", function() {
+				var fs = require("fs");
+				var _response;
+				var _body;
+
+				before(function(done) {
+					var formData = {
+						file: fs.createReadStream("./test/test.pdf")
+					};
+
+					request.post({ url: lib.getFullURL("/classes/abcd1234abcd1234abcd1234/registrationForm"), headers: { Cookie: lib.getCookie(true)() }, formData: formData }, function(_, res, body) {
+						_response = res;
+						_body = body;
+						done();
+					});
+				});
+
+				it("should return a 404 status code", function() {
+					_response.statusCode.should.be.exactly(404);
+				});
+		
+				it("should return a JSON content-type", function() {
+					_response.headers["content-type"].toLowerCase().should.be.exactly("application/json");
+				});
+			});
+
 			describe("With a valid and real class ID", function() {
 
 				var fs = require("fs");
