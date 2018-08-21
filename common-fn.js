@@ -1,142 +1,170 @@
-const restify = require("restify");
+const restify = require('restify');
 
 function getBasicBodyHandler(permissionName, logger, validationFn, handler) {
-	return function(req, res, next) {
-		if(!req.user || !req.user.permissions[permissionName]) {
-			logger.error("Unauthorized user");
-            return next(new restify.UnauthorizedError());
-        }
+  return function(req, res, next) {
+    if (!req.user || !req.user.permissions[permissionName]) {
+      logger.error('Unauthorized user');
+      return next(new restify.UnauthorizedError());
+    }
 
-		let obj = req.body;
-		if(!validationFn || (validationFn && validationFn(obj))) {
-			if(handler) {
-				handler(req, res, obj);
-			}
-		} else {
-			logger.error("Invalid model object");
-			logger.error(obj);
-			return next(new restify.BadRequestError());
-		}
+    let obj = req.body;
+    if (!validationFn || (validationFn && validationFn(obj))) {
+      if (handler) {
+        handler(req, res, obj);
+      }
+    } else {
+      logger.error('Invalid model object');
+      logger.error(obj);
+      return next(new restify.BadRequestError());
+    }
 
-		next();
-	};
-};
+    next();
+  };
+}
 
 module.exports = {
-	getModelLister(model, logger, sort, postProcessFn) {
-		return function(req, res, next) {
-			let query = model.find({});
-			if(sort) {
-				query = query.sort(sort);
-			}
+  getModelLister(model, logger, sort, postProcessFn) {
+    return function(req, res, next) {
+      let query = model.find({});
+      if (sort) {
+        query = query.sort(sort);
+      }
 
-			query.exec(function(err, objs) {
-				if(err) {
-					logger.error(err);
-					res.send(new restify.InternalServerError());
-				} else {
-					if(postProcessFn) {
-						postProcessFn(objs, req);
-					}
-					res.send(200, objs);
-				}
-			});
-			next();
-		};
-	},
-	getModelCreator(DBModel, permissionName, logger, validationFn, postProcessFn) {
-		return getBasicBodyHandler(permissionName, logger, validationFn, function(req, res, obj) {
-			delete obj._id;
+      query.exec(function(err, objs) {
+        if (err) {
+          logger.error(err);
+          res.send(new restify.InternalServerError());
+        } else {
+          if (postProcessFn) {
+            postProcessFn(objs, req);
+          }
+          res.send(200, objs);
+        }
+      });
+      next();
+    };
+  },
+  getModelCreator(
+    DBModel,
+    permissionName,
+    logger,
+    validationFn,
+    postProcessFn
+  ) {
+    return getBasicBodyHandler(permissionName, logger, validationFn, function(
+      req,
+      res,
+      obj
+    ) {
+      delete obj._id;
 
-			let save = function() {
-				modelObj.save(function(err) {
-					if(err) {
-						logger.error(err);
-						res.send(new restify.InternalServerError());
-					} else {
-						res.send(200, modelObj);
-					}
-				});
-			};
+      let save = function() {
+        modelObj.save(function(err) {
+          if (err) {
+            console.log('===== ERROR =====')
+            console.log(err)
+            logger.error(err);
+            res.send(new restify.InternalServerError());
+          } else {
+            res.send(200, modelObj);
+          }
+        });
+      };
 
-			let modelObj = new DBModel(obj);
-			if(postProcessFn) {
-				if(postProcessFn.length > 1) {
-					postProcessFn(modelObj, save);
-				} else {
-					postProcessFn(modelObj);
-					save();
-				}
-			} else {
-				save();
-			}
-		});
-	},
-	getModelUpdater(model, parameterName, permissionName, logger, validationFn, postProcessFn) {
-		return getBasicBodyHandler(permissionName, logger, validationFn, function(req, res, obj) {
-			delete obj._id;
+      let modelObj = new DBModel(obj);
+      if (postProcessFn) {
+        if (postProcessFn.length > 1) {
+          postProcessFn(modelObj, save);
+        } else {
+          postProcessFn(modelObj);
+          save();
+        }
+      } else {
+        save();
+      }
+    });
+  },
+  getModelUpdater(
+    model,
+    parameterName,
+    permissionName,
+    logger,
+    validationFn,
+    postProcessFn
+  ) {
+    return getBasicBodyHandler(permissionName, logger, validationFn, function(
+      req,
+      res,
+      obj
+    ) {
+      delete obj._id;
 
-			if(!/[a-zA-Z0-9]{24}/.test(req.params[parameterName])) {
-				res.send(new restify.BadRequestError());
-				return;
-			}
+      if (!/[a-zA-Z0-9]{24}/.test(req.params[parameterName])) {
+        res.send(new restify.BadRequestError());
+        return;
+      }
 
-			model.findOne({ _id: req.params[parameterName] }).exec(function(err, modelObj) {
-				if(err) {
-					logger.error(err);
-					res.send(new restify.InternalServerError());
-				} else if(modelObj) {
-					if(postProcessFn) {
-						postProcessFn(modelObj);
-					}
+      model
+        .findOne({ _id: req.params[parameterName] })
+        .exec(function(err, modelObj) {
+          if (err) {
+            logger.error(err);
+            res.send(new restify.InternalServerError());
+          } else if (modelObj) {
+            if (postProcessFn) {
+              postProcessFn(modelObj);
+            }
 
-					model.update({ _id: req.params[parameterName] }, obj, { upsert: true }).exec(function(err) {
-						if(err) {
-							logger.error(err);
-							res.send(new restify.InternalServerError());
-						} else {
-							res.send(200, { });
-						}
-					});
-				} else {
-					res.send(new restify.NotFoundError());
-				}
-			});
-		});
-	},
-	getModelDeleter(model, parameterName, permissionName, logger, postProcessFn) {
-		return function(req, res, next) {
-			if(!req.user || !req.user.permissions[permissionName]) {
-				return next(new restify.UnauthorizedError());
-			}
-			
-			if(!/[a-zA-Z0-9]{24}/.test(req.params[parameterName])) {
-				return next(new restify.BadRequestError());
-			}
+            model
+              .update({ _id: req.params[parameterName] }, obj)
+              .exec(function(err) {
+                if (err) {
+                  logger.error(err);
+                  res.send(new restify.InternalServerError());
+                } else {
+                  res.send(200, {});
+                }
+              });
+          } else {
+            res.send(new restify.NotFoundError());
+          }
+        });
+    });
+  },
+  getModelDeleter(model, parameterName, permissionName, logger, postProcessFn) {
+    return function(req, res, next) {
+      if (!req.user || !req.user.permissions[permissionName]) {
+        return next(new restify.UnauthorizedError());
+      }
 
-			model.findOne({ _id: req.params[parameterName] }).exec(function(err, modelObj) {
-				if(err) {
-					logger.error(err);
-					res.send(new restify.InternalServerError());
-				} else if(modelObj) {
-					modelObj.remove(function(err)
-					{
-						if(err) {
-							logger.error(err);
-							res.send(new restify.InternalServerError());
-						} else {
-							if(postProcessFn) {
-								postProcessFn(modelObj);
-							}
-							res.send(200, { });
-						}
-					});
-				} else {
-					res.send(new restify.NotFoundError());
-				}
-			});
+      if (!/[a-zA-Z0-9]{24}/.test(req.params[parameterName])) {
+        return next(new restify.BadRequestError());
+      }
 
-			next();
-		};
-	}
+      model
+        .findOne({ _id: req.params[parameterName] })
+        .exec(function(err, modelObj) {
+          if (err) {
+            logger.error(err);
+            res.send(new restify.InternalServerError());
+          } else if (modelObj) {
+            modelObj.remove(function(err) {
+              if (err) {
+                logger.error(err);
+                res.send(new restify.InternalServerError());
+              } else {
+                if (postProcessFn) {
+                  postProcessFn(modelObj);
+                }
+                res.send(200, {});
+              }
+            });
+          } else {
+            res.send(new restify.NotFoundError());
+          }
+        });
+
+      next();
+    };
+  }
 };

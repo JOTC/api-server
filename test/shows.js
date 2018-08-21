@@ -148,7 +148,32 @@ describe("Shows API", function() {
 		describe("Valid user without permission", lib.statusAndJSON("post", urlFn, lib.getCookie(false), null, 401));
 		describe("Valid user with permission", function() {
 			describe("With an invalid show ID", lib.statusAndJSON("post", "/shows/abcd1234/file?name=Test%20File", lib.getCookie(true), null, 400));
-			describe("With a valid but fake show ID", lib.statusAndJSON("post", "/shows/abcd1234abcd1234abcd1234/file?name=Test%20File", lib.getCookie(true), null, 404));
+			describe("With a valid but fake show ID", function() {
+				var fs = require("fs");
+				var _response;
+				var _body;
+
+				before(function(done) {
+					var formData = {
+						file: fs.createReadStream("./test/test.pdf")
+					};
+
+					request.post({ url: lib.getFullURL("/shows/abcd1234abcd1234abcd1234/file?name=Test%20File"), headers: { Cookie: lib.getCookie(true)() }, formData: formData }, function(_, res, body) {
+						_response = res;
+						_body = body;
+						done();
+					});
+				});
+
+				it("should return a 404 status code", function() {
+					_response.statusCode.should.be.exactly(404);
+				});
+		
+				it("should return a JSON content-type", function() {
+					_response.headers["content-type"].toLowerCase().should.be.exactly("application/json");
+				});
+			});
+
 			describe("With a valid and real show ID but no name", lib.statusAndJSON("post", function() { return urlFn().replace(/\?name=.*/, ""); }, lib.getCookie(true), null, 400));
 			describe("With a valid and real show ID and valid name", function() {
 				var _response;

@@ -1,11 +1,15 @@
 {
-	"port": 9931,
-	"session": {
-		"secret": "session-secret-key",
-		"lifetimeInDays": 10 
-	},
-	"gmail": {
-		"username": "gmail-username",
-		"password": "gmail-password"
-	}
+  "port": 9931,
+  "dbUrl": "mongodb://localhost/jotc",
+  "session": {
+    "secret": "session-secret-key",
+    "lifetimeInDays": 10
+  },
+  "gmail": {
+    "username": "gmail-username",
+    "password": "gmail-password"
+  },
+  "stripe": {
+    "key": "stripe-private-key"
+  }
 }
