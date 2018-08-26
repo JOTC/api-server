@@ -119,7 +119,19 @@ module.exports = {
 			})
 		},
 		"/users/:userID": {
-			"put": fn.getModelUpdater(db.users, "userID", "users", log, isValidUser),
+			"put": function(req, res, next) {
+				db.users.findOne({ _id: req.params.userID }).exec(function(err, user) {
+					if (err) {
+						log.error(`Error updating user ${req.params.userID}`);
+						log.error(err);
+						return res.send(new restify.InternalServerError());
+					}
+
+					req.body.local = user.local;
+
+					return fn.getModelUpdater(db.users, "userID", "users", log, isValidUser)(req,res,next)
+				});
+			},
 			"delete": fn.getModelDeleter(db.users, "userID", "users", log)
 		},
 		"/auth/local/reset": {
